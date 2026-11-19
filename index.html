@@ -23,7 +23,7 @@ input:focus{outline:2px solid var(--ac);border-color:transparent}
 .p{background:var(--card);border:1px solid var(--bd);border-radius:14px;margin-bottom:8px;overflow:hidden}
 .h{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left}
 .rk{min-width:38px;height:38px;border-radius:50%;background:var(--ph);display:grid;place-items:center;font-weight:700;font-size:14px}
-.rk.g{background:var(--gold);color:#241c00}
+.rk.tr{background:none;min-width:40px;height:40px}.rk.tr svg{width:40px;height:40px;display:block}
 .nm{flex:1;font-weight:600;min-width:0}.nm small{display:block;color:var(--mu);font-weight:400;font-size:12px}
 .pt{font-weight:700;color:var(--ac);font-size:18px;text-align:right}.pt small{display:block;color:var(--mu);font-size:11px;font-weight:400}
 .d{display:none;border-top:1px solid var(--bd);padding:6px 14px 12px}.p.open .d{display:block}
@@ -62,6 +62,8 @@ function dl(p){const ks=keys(),i=ks.indexOf(cur);if(i<1)return '';const q=fq(ks[
 function pd(p){const ks=keys(),i=ks.indexOf(cur);if(i<1)return 'points';const q=fq(ks[i-1],p);if(!q&&(p.r.length>1||ks.slice(0,i-1).some(k=>fq(k,p))))return 'points';const d=p.p-(q?q.p:0);if(!d)return 'points';return '<span class="'+(d>0?'pu':'pdn')+'">'+(d>0?'+':'−')+Math.abs(d)+' pts</span>'}
 function hist(p){const ks=keys();let h='<div class="hs"><div class="hm">Historique du classement</div>';ks.slice().reverse().forEach(k=>{const q=fq(k,p);if(q)h+='<div class="r"><div class="tn">'+mlab(k)+'</div><b>n° '+q.rk+' · '+q.p+' pts</b></div>'});if(ks.length<2)h+='<p class="note">L’historique se construira au fil des mois.</p>';return h+'</div>'}
 const $=id=>document.getElementById(id);
+const TC={1:['#f2b705','#b98700','or'],2:['#c3cad5','#8a94a4','argent'],3:['#d9843b','#9a5418','bronze']};
+const trophy=r=>{const c=TC[r];return '<svg viewBox="0 0 24 24" role="img" aria-label="Trophée '+c[2]+', rang '+r+'"><path d="M7 4H4v2.5A3.5 3.5 0 0 0 7.5 10M17 4h3v2.5a3.5 3.5 0 0 1-3.5 3.5" fill="none" stroke="'+c[1]+'" stroke-width="1.6" stroke-linecap="round"/><path d="M7 3h10v6.5a5 5 0 0 1-10 0z" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1"/><rect x="11" y="14" width="2" height="4" fill="'+c[1]+'"/><rect x="7.5" y="18" width="9" height="3" rx="1" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1"/><text x="12" y="9.6" text-anchor="middle" font-size="7" font-weight="800" fill="#1b1b1b" font-family="system-ui,sans-serif">'+r+'</text></svg>'};
 const fmt=d=>{const[y,m,j]=d.split('-');return j+'/'+m+'/'+y};
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 function prep(){for(const sn of Object.values(SNAPS))for(const k of['H','F']){const L=sn[k].p;let rk=0;L.forEach((p,i)=>{if(i===0||p.p!==L[i-1].p)rk=i+1;p.rk=p.c||rk;p.k=norm(p.n);
@@ -78,7 +80,7 @@ let det='';
 if(o){const rs=[...p.r].sort((a,b)=>D.t[b[0]].d.localeCompare(D.t[a[0]].d)||b[1]-a[1]);
 det='<div class="d">'+rs.map(([t,v])=>{const T=D.t[t],c=p.top.has(t);
 return '<div class="r '+(c?'yes':'no')+'"><div class="tn">'+T.n.replace(/&/g,'&amp;')+(c?'<span class="tag">compte</span>':'')+'<small>'+fmt(T.d)+'</small></div><b>+'+v+' pts</b></div>'}).join('')+hist(p)+'</div>'}
-return '<div class="p'+(o?' open':'')+'"><button class="h" data-n="'+p.n.replace(/"/g,'&quot;')+'"><span class="rk'+(p.rk<=3?' g':'')+'">'+p.rk+'</span><span class="nm">'+p.n.replace(/&/g,'&amp;')+'<small>'+p.r.length+' tournoi'+(p.r.length>1?'s':'')+'</small></span>'+dl(p)+'<span class="pt">'+p.p+'<small>'+pd(p)+'</small></span></button>'+det+'</div>'}).join('')
+return '<div class="p'+(o?' open':'')+'"><button class="h" data-n="'+p.n.replace(/"/g,'&quot;')+'">'+(p.rk<=3?'<span class="rk tr">'+trophy(p.rk)+'</span>':'<span class="rk">'+p.rk+'</span>')+'<span class="nm">'+p.n.replace(/&/g,'&amp;')+'<small>'+p.r.length+' tournoi'+(p.r.length>1?'s':'')+'</small></span>'+dl(p)+'<span class="pt">'+p.p+'<small>'+pd(p)+'</small></span></button>'+det+'</div>'}).join('')
 +(L.length>sh.length?'<div class="empty">Affichage des '+sh.length+' premiers — utilisez la recherche pour trouver un joueur</div>':'')}
 $('list').addEventListener('click',e=>{const b=e.target.closest('.h');if(!b)return;const k=g+b.dataset.n;open=open===k?null:k;render()});
 $('q').addEventListener('input',()=>{open=null;render()});
